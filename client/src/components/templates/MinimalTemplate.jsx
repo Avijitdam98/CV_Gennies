@@ -9,9 +9,9 @@ const MinimalTemplate = ({ data, formatDate }) => {
           {data.personalInfo?.fullName}
         </h1>
         <div className="text-gray-600 mt-2 space-x-4 text-sm">
-          {data.personalInfo?.email && <span>{data.personalInfo.email}</span>}
-          {data.personalInfo?.phone && <span>• {data.personalInfo.phone}</span>}
-          {data.personalInfo?.address && <span>• {data.personalInfo.address}</span>}
+          {data.personalInfo?.email && <span key="email">{data.personalInfo.email}</span>}
+          {data.personalInfo?.phone && <span key="phone">• {data.personalInfo.phone}</span>}
+          {data.personalInfo?.address && <span key="address">• {data.personalInfo.address}</span>}
         </div>
         {data.personalInfo?.summary && (
           <p className="mt-4 text-gray-700 max-w-2xl mx-auto">
@@ -83,9 +83,9 @@ const MinimalTemplate = ({ data, formatDate }) => {
             Skills
           </h2>
           <div className="flex flex-wrap gap-2">
-            {data.skills.map((skill) => (
+            {data.skills.map((skill, index) => (
               <span
-                key={skill.id}
+                key={`skill-${skill.id || index}`}
                 className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded"
               >
                 {skill.name}
@@ -124,9 +124,9 @@ const MinimalTemplate = ({ data, formatDate }) => {
                 )}
                 {project.technologies?.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {project.technologies.map((tech) => (
+                    {project.technologies.map((tech, index) => (
                       <span
-                        key={`${project.id}-${tech}`}
+                        key={`${project.id}-${tech}-${index}`}
                         className="px-2 py-1 bg-gray-100 text-gray-600 text-xs"
                       >
                         {tech}

@@ -108,8 +108,11 @@ const ProfessionalTemplate = ({ data, formatDate }) => {
             Skills & Expertise
           </h2>
           <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-            {data.skills.map((skill) => (
-              <div key={skill.id} className="relative">
+            {data.skills.map((skill, index) => (
+              <div
+                key={`skill-${skill.id || index}`}
+                className="relative"
+              >
                 <div className="flex justify-between mb-1">
                   <span className="text-gray-700 font-medium">{skill.name}</span>
                   <span className="text-blue-800 text-sm">{skill.level}</span>
@@ -164,12 +167,12 @@ const ProfessionalTemplate = ({ data, formatDate }) => {
                 {project.technologies?.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {project.technologies.map((tech, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+                      <div
+                        key={`${project.id}-${tech}-${index}`}
+                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded text-sm"
                       >
                         {tech}
-                      </span>
+                      </div>
                     ))}
                   </div>
                 )}

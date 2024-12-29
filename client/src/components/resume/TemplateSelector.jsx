@@ -1,47 +1,41 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import ModernTemplate from '../templates/ModernTemplate';
-import MinimalTemplate from '../templates/MinimalTemplate';
-import ProfessionalTemplate from '../templates/ProfessionalTemplate';
-import CreativeTemplate from '../templates/CreativeTemplate';
-import ExecutiveTemplate from '../templates/ExecutiveTemplate';
-import { useNavigate } from 'react-router-dom';
 
 const templates = [
   {
     id: 'modern',
     name: 'Modern',
-    component: ModernTemplate,
-    thumbnail: '/templates/modern.png',
+    //component: ModernTemplate,
+    thumbnail: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=2070&auto=format&fit=crop',
     description: 'Clean and contemporary design with a focus on readability',
   },
   {
     id: 'minimal',
     name: 'Minimal',
-    component: MinimalTemplate,
-    thumbnail: '/templates/minimal.png',
+   // component: MinimalTemplate,
+    thumbnail: 'https://images.unsplash.com/photo-1626197031507-c17099753214?q=80&w=2070&auto=format&fit=crop',
     description: 'Simple and elegant layout that lets your content shine',
   },
   {
     id: 'professional',
     name: 'Professional',
-    component: ProfessionalTemplate,
-    thumbnail: '/templates/professional.png',
+    //component: ProfessionalTemplate,
+    thumbnail: 'https://images.unsplash.com/photo-1517292987719-0369a794ec0f?q=80&w=2074&auto=format&fit=crop',
     description: 'Traditional format ideal for corporate and business roles',
   },
   {
     id: 'creative',
     name: 'Creative',
-    component: CreativeTemplate,
-    thumbnail: '/templates/creative.png',
+    //component: CreativeTemplate,
+    thumbnail: 'https://images.unsplash.com/photo-1574618625290-902d0640a3e6?q=80&w=2074&auto=format&fit=crop',
     description: 'Bold and innovative design for creative professionals',
     premium: true,
   },
   {
     id: 'executive',
     name: 'Executive',
-    component: ExecutiveTemplate,
-    thumbnail: '/templates/executive.png',
+    //component: ExecutiveTemplate,
+    thumbnail: 'https://images.unsplash.com/photo-1586282391129-76a6df230234?q=80&w=2070&auto=format&fit=crop',
     description: 'Sophisticated layout perfect for senior positions',
     premium: true,
   },
@@ -49,7 +43,6 @@ const templates = [
 
 const TemplateSelector = ({ selectedTemplate, onSelect, subscription }) => {
   const isPro = subscription?.type === 'pro';
-  const navigate = useNavigate();
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
@@ -68,17 +61,16 @@ const TemplateSelector = ({ selectedTemplate, onSelect, subscription }) => {
             onClick={() => {
               if (!template.premium || isPro) {
                 onSelect(template.id);
-              } else {
-                navigate('/subscription');
               }
             }}
           >
             {/* Template Preview */}
-            <div className="aspect-w-4 aspect-h-3 bg-gray-100">
+            <div className="relative w-full h-48">
               <img
                 src={template.thumbnail}
                 alt={template.name}
-                className="object-cover"
+                className="w-full h-full object-cover"
+                loading="lazy"
               />
             </div>
 
