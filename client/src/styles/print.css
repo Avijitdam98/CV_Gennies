@@ -1,0 +1,55 @@
+@media print {
+  /* Hide everything except the resume preview */
+  body > *:not(.resume-preview) {
+    display: none !important;
+  }
+
+  /* Reset page margins */
+  @page {
+    margin: 0.5cm;
+    size: A4;
+  }
+
+  /* Resume preview specific styles */
+  .resume-preview {
+    width: 100% !important;
+    height: 100% !important;
+    overflow: visible !important;
+    background-color: white !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Remove background colors and shadows */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  /* Ensure text is black for better printing */
+  body {
+    color: black !important;
+  }
+
+  /* Break pages appropriately */
+  .page-break {
+    page-break-before: always;
+  }
+
+  /* Ensure links are visible */
+  a {
+    text-decoration: underline;
+    color: #2563eb !important;
+  }
+
+  /* Hide scroll bars */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
