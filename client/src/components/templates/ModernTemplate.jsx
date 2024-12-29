@@ -1,15 +1,39 @@
 import React from 'react';
 
-const ModernTemplate = ({ data }) => {
+const ModernTemplate = ({ data, formatDate }) => {
   return (
-    <div className="bg-white p-8 shadow-lg max-w-[800px] mx-auto">
+    <div className="p-8 font-sans">
       {/* Header */}
-      <div className="border-l-4 border-primary-500 pl-4 mb-8">
-        <h1 className="text-4xl font-bold text-gray-900">{data.personalInfo?.fullName}</h1>
-        <div className="text-gray-600 mt-2 space-y-1">
-          {data.personalInfo?.email && <p>{data.personalInfo.email}</p>}
-          {data.personalInfo?.phone && <p>{data.personalInfo.phone}</p>}
-          {data.personalInfo?.address && <p>{data.personalInfo.address}</p>}
+      <div className="border-b-2 border-gray-300 pb-4 mb-8">
+        <h1 className="text-4xl font-bold text-gray-900">
+          {data.personalInfo?.fullName || 'Your Name'}
+        </h1>
+        <div className="mt-2 text-gray-600 flex flex-wrap gap-4">
+          {data.personalInfo?.email && (
+            <span className="flex items-center">
+              <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+              </svg>
+              {data.personalInfo.email}
+            </span>
+          )}
+          {data.personalInfo?.phone && (
+            <span className="flex items-center">
+              <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+              </svg>
+              {data.personalInfo.phone}
+            </span>
+          )}
+          {data.personalInfo?.address && (
+            <span className="flex items-center">
+              <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+              </svg>
+              {data.personalInfo.address}
+            </span>
+          )}
         </div>
         {data.personalInfo?.summary && (
           <p className="mt-4 text-gray-700">{data.personalInfo.summary}</p>
@@ -19,24 +43,23 @@ const ModernTemplate = ({ data }) => {
       {/* Experience */}
       {data.experience?.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 border-b-2 border-primary-200 pb-2">
-            Professional Experience
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Experience</h2>
           <div className="space-y-6">
-            {data.experience.map((exp) => (
-              <div key={exp.id} className="relative pl-4 border-l border-gray-200">
-                <div className="absolute w-3 h-3 bg-primary-500 rounded-full -left-[6.5px] top-2"></div>
+            {data.experience.map((exp, index) => (
+              <div key={index} className="border-l-2 border-gray-200 pl-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{exp.position}</h3>
+                    <h3 className="font-semibold text-gray-900">{exp.position}</h3>
                     <div className="text-gray-700">{exp.company}</div>
                   </div>
                   <div className="text-gray-600 text-sm">
-                    {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
+                    {formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}
                   </div>
                 </div>
                 {exp.description && (
-                  <p className="mt-2 text-gray-700 whitespace-pre-line">{exp.description}</p>
+                  <p className="mt-2 text-gray-600 text-sm whitespace-pre-line">
+                    {exp.description}
+                  </p>
                 )}
               </div>
             ))}
@@ -47,26 +70,23 @@ const ModernTemplate = ({ data }) => {
       {/* Education */}
       {data.education?.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 border-b-2 border-primary-200 pb-2">
-            Education
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Education</h2>
           <div className="space-y-6">
-            {data.education.map((edu) => (
-              <div key={edu.id} className="relative pl-4 border-l border-gray-200">
-                <div className="absolute w-3 h-3 bg-primary-500 rounded-full -left-[6.5px] top-2"></div>
+            {data.education.map((edu, index) => (
+              <div key={index} className="border-l-2 border-gray-200 pl-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{edu.institution}</h3>
-                    <div className="text-gray-700">
-                      {edu.degree} {edu.field && `in ${edu.field}`}
-                    </div>
+                    <h3 className="font-semibold text-gray-900">{edu.institution}</h3>
+                    <div className="text-gray-700">{edu.degree}</div>
                   </div>
                   <div className="text-gray-600 text-sm">
-                    {edu.startDate} - {edu.endDate}
+                    {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
                   </div>
                 </div>
-                {edu.grade && (
-                  <div className="text-gray-600 mt-1">Grade: {edu.grade}</div>
+                {edu.description && (
+                  <p className="mt-2 text-gray-600 text-sm whitespace-pre-line">
+                    {edu.description}
+                  </p>
                 )}
               </div>
             ))}
@@ -77,28 +97,15 @@ const ModernTemplate = ({ data }) => {
       {/* Skills */}
       {data.skills?.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 border-b-2 border-primary-200 pb-2">
-            Skills
-          </h2>
-          <div className="grid grid-cols-2 gap-4">
-            {data.skills.map((skill) => (
-              <div key={skill.id} className="flex items-center justify-between">
-                <span className="text-gray-700">{skill.name}</span>
-                <div className="w-24 h-2 bg-gray-200 rounded-full">
-                  <div
-                    className="h-full bg-primary-500 rounded-full"
-                    style={{
-                      width: `${
-                        skill.level === 'Beginner'
-                          ? '33%'
-                          : skill.level === 'Intermediate'
-                          ? '66%'
-                          : '100%'
-                      }`,
-                    }}
-                  ></div>
-                </div>
-              </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Skills</h2>
+          <div className="flex flex-wrap gap-2">
+            {data.skills.map((skill, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm"
+              >
+                {skill.name}
+              </span>
             ))}
           </div>
         </div>
@@ -106,40 +113,23 @@ const ModernTemplate = ({ data }) => {
 
       {/* Projects */}
       {data.projects?.length > 0 && (
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 border-b-2 border-primary-200 pb-2">
-            Projects
-          </h2>
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Projects</h2>
           <div className="space-y-6">
-            {data.projects.map((project) => (
-              <div key={project.id} className="relative pl-4 border-l border-gray-200">
-                <div className="absolute w-3 h-3 bg-primary-500 rounded-full -left-[6.5px] top-2"></div>
-                <div className="flex justify-between items-start">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {project.title}
-                  </h3>
-                  {project.link && (
-                    <a
-                      href={project.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary-600 hover:text-primary-700 text-sm"
-                    >
-                      View Project
-                    </a>
-                  )}
-                </div>
-                {project.description && (
-                  <p className="mt-2 text-gray-700">{project.description}</p>
-                )}
-                {project.technologies?.length > 0 && (
+            {data.projects.map((project, index) => (
+              <div key={index} className="border-l-2 border-gray-200 pl-4">
+                <h3 className="font-semibold text-gray-900">{project.title}</h3>
+                <p className="mt-2 text-gray-600 text-sm whitespace-pre-line">
+                  {project.description}
+                </p>
+                {project.technologies && (
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {project.technologies.map((tech, index) => (
+                    {(Array.isArray(project.technologies) ? project.technologies : project.technologies.split(',')).map((tech, i) => (
                       <span
-                        key={index}
-                        className="px-2 py-1 bg-primary-100 text-primary-700 text-sm rounded"
+                        key={i}
+                        className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs"
                       >
-                        {tech}
+                        {tech.trim()}
                       </span>
                     ))}
                   </div>

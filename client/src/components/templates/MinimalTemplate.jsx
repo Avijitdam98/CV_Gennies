@@ -1,6 +1,6 @@
 import React from 'react';
 
-const MinimalTemplate = ({ data }) => {
+const MinimalTemplate = ({ data, formatDate }) => {
   return (
     <div className="bg-white p-8 shadow-lg max-w-[800px] mx-auto font-sans">
       {/* Header */}
@@ -30,13 +30,13 @@ const MinimalTemplate = ({ data }) => {
             {data.experience.map((exp) => (
               <div key={exp.id} className="grid grid-cols-[1fr,2fr] gap-4">
                 <div className="text-gray-600 text-sm">
-                  {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
+                  {formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900">{exp.position}</h3>
                   <div className="text-gray-700">{exp.company}</div>
                   {exp.description && (
-                    <p className="mt-2 text-gray-600 text-sm">
+                    <p className="mt-2 text-gray-600 text-sm whitespace-pre-line">
                       {exp.description}
                     </p>
                   )}
@@ -57,7 +57,7 @@ const MinimalTemplate = ({ data }) => {
             {data.education.map((edu) => (
               <div key={edu.id} className="grid grid-cols-[1fr,2fr] gap-4">
                 <div className="text-gray-600 text-sm">
-                  {edu.startDate} - {edu.endDate}
+                  {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900">{edu.institution}</h3>
@@ -124,9 +124,9 @@ const MinimalTemplate = ({ data }) => {
                 )}
                 {project.technologies?.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {project.technologies.map((tech, index) => (
+                    {project.technologies.map((tech) => (
                       <span
-                        key={index}
+                        key={`${project.id}-${tech}`}
                         className="px-2 py-1 bg-gray-100 text-gray-600 text-xs"
                       >
                         {tech}

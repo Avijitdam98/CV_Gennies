@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ExecutiveTemplate = ({ data }) => {
+const ExecutiveTemplate = ({ data, formatDate }) => {
   return (
     <div className="bg-white p-8 shadow-lg max-w-[800px] mx-auto">
       {/* Header */}
@@ -71,7 +71,7 @@ const ExecutiveTemplate = ({ data }) => {
                     <div className="text-lg text-gray-700">{exp.company}</div>
                   </div>
                   <div className="text-gray-600">
-                    {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
+                    {formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}
                   </div>
                 </div>
                 {exp.description && (
@@ -102,7 +102,7 @@ const ExecutiveTemplate = ({ data }) => {
                     </div>
                   </div>
                   <div className="text-gray-600">
-                    {edu.startDate} - {edu.endDate}
+                    {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
                   </div>
                 </div>
                 {edu.grade && (

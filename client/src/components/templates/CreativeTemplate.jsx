@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CreativeTemplate = ({ data }) => {
+const CreativeTemplate = ({ data, formatDate }) => {
   return (
     <div className="bg-white p-8 shadow-lg max-w-[800px] mx-auto">
       {/* Header with creative design */}
@@ -60,7 +60,7 @@ const CreativeTemplate = ({ data }) => {
                       <div className="text-gray-600">{exp.company}</div>
                     </div>
                     <div className="text-sm text-gray-500">
-                      {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
+                      {formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}
                     </div>
                   </div>
                   {exp.description && (
@@ -120,7 +120,7 @@ const CreativeTemplate = ({ data }) => {
                       </div>
                     </div>
                     <div className="text-sm text-gray-500">
-                      {edu.startDate} - {edu.endDate}
+                      {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
                     </div>
                   </div>
                   {edu.grade && (

@@ -5,6 +5,7 @@ import MinimalTemplate from '../templates/MinimalTemplate';
 import ProfessionalTemplate from '../templates/ProfessionalTemplate';
 import CreativeTemplate from '../templates/CreativeTemplate';
 import ExecutiveTemplate from '../templates/ExecutiveTemplate';
+import { useNavigate } from 'react-router-dom';
 
 const templates = [
   {
@@ -48,6 +49,7 @@ const templates = [
 
 const TemplateSelector = ({ selectedTemplate, onSelect, subscription }) => {
   const isPro = subscription?.type === 'pro';
+  const navigate = useNavigate();
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
@@ -66,6 +68,8 @@ const TemplateSelector = ({ selectedTemplate, onSelect, subscription }) => {
             onClick={() => {
               if (!template.premium || isPro) {
                 onSelect(template.id);
+              } else {
+                navigate('/subscription');
               }
             }}
           >

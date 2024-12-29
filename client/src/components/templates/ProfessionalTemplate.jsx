@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ProfessionalTemplate = ({ data }) => {
+const ProfessionalTemplate = ({ data, formatDate }) => {
   return (
     <div className="bg-white p-8 shadow-lg max-w-[800px] mx-auto">
       {/* Header with colored background */}
@@ -60,7 +60,7 @@ const ProfessionalTemplate = ({ data }) => {
                     <div className="text-blue-800 font-medium">{exp.company}</div>
                   </div>
                   <div className="text-gray-600 text-sm">
-                    {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
+                    {formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}
                   </div>
                 </div>
                 {exp.description && (
@@ -89,7 +89,7 @@ const ProfessionalTemplate = ({ data }) => {
                     </div>
                   </div>
                   <div className="text-gray-600 text-sm">
-                    {edu.startDate} - {edu.endDate}
+                    {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
                   </div>
                 </div>
                 {edu.grade && (

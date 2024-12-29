@@ -11,8 +11,11 @@ import CertificationsForm from '../components/resume/CertificationsForm';
 import LanguagesForm from '../components/resume/LanguagesForm';
 import AwardsForm from '../components/resume/AwardsForm';
 import ResumePreview from '../components/resume/ResumePreview';
+import TemplateSelector from '../components/resume/TemplateSelector';
+import { useSelector } from 'react-redux';
 
 const ResumeBuilder = () => {
+  const subscription = useSelector((state) => state.subscription);
   const [activeSections, setActiveSections] = useState({
     personalInfo: true,
     skills: false,
@@ -35,6 +38,8 @@ const ResumeBuilder = () => {
     { id: 'awards', title: 'Awards', icon: 'award', component: AwardsForm },
   ];
 
+  const [selectedTemplate, setSelectedTemplate] = useState('modern');
+
   const [resumeData, setResumeData] = useState({
     personalInfo: {},
     skills: [],
@@ -44,6 +49,7 @@ const ResumeBuilder = () => {
     certifications: [],
     languages: [],
     awards: [],
+    template: 'modern',
   });
 
   const getIcon = (iconName) => {
@@ -182,6 +188,18 @@ const ResumeBuilder = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Forms */}
           <div className="space-y-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-8">Create Your Resume</h1>
+            
+            {/* Template Selection */}
+            <div className="bg-white shadow rounded-lg overflow-hidden">
+              <TemplateSelector
+                selectedTemplate={selectedTemplate}
+                onSelect={setSelectedTemplate}
+                subscription={subscription}
+              />
+            </div>
+
+            {/* Section Forms */}
             <div className="flex justify-between items-center">
               <h1 className="text-2xl font-bold text-gray-900">Resume Builder</h1>
             </div>
@@ -257,7 +275,11 @@ const ResumeBuilder = () => {
             </div>
 
             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-              <ResumePreview ref={previewRef} data={resumeData} />
+              <ResumePreview 
+                data={resumeData} 
+                selectedTemplate={selectedTemplate}
+                ref={previewRef}
+              />
             </div>
           </div>
         </div>
