@@ -1,13 +1,80 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    
+    <!-- Primary Meta Tags -->
+    <title>CV Gennies | Modern Resume Builder</title>
+    <meta name="title" content="CV Gennies | Modern Resume Builder">
+    <meta name="description" content="Create stunning professional resumes in minutes with CV Gennies. Modern templates, real-time preview, and easy customization.">
+    <meta name="keywords" content="resume builder, CV maker, professional resume, job application, career tools">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="mask-icon" href="/favicon.svg" color="#3B82F6">
+    
+    <!-- PWA Support -->
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#3B82F6">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="CV Gennies">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="CV Gennies">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    <!-- Viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://cvgennies.com/">
+    <meta property="og:title" content="CV Gennies | Modern Resume Builder">
+    <meta property="og:description" content="Create stunning professional resumes in minutes with CV Gennies. Modern templates, real-time preview, and easy customization.">
+    <meta property="og:image" content="/og-image.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://cvgennies.com/">
+    <meta property="twitter:title" content="CV Gennies | Modern Resume Builder">
+    <meta property="twitter:description" content="Create stunning professional resumes in minutes with CV Gennies. Modern templates, real-time preview, and easy customization.">
+    <meta property="twitter:image" content="/og-image.png">
+    
+    <!-- Preconnect to Important Origins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Prevent Flash of Unstyled Content -->
+    <style>
+      html, body {
+        background: #F8FAFC;
+        margin: 0;
+        padding: 0;
+      }
+      #root {
+        opacity: 0;
+        animation: fadeIn 0.3s ease-in forwards;
+      }
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <noscript>
+      <div style="padding: 2rem; text-align: center; font-family: system-ui, -apple-system, sans-serif;">
+        <h1 style="color: #1E293B;">JavaScript Required</h1>
+        <p style="color: #475569;">
+          CV Gennies needs JavaScript to create amazing resumes. Please enable JavaScript in your browser settings.
+        </p>
+      </div>
+    </noscript>
   </body>
 </html>

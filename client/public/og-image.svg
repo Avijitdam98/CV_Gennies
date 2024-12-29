@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with Gradient -->
+  <rect width="1200" height="630" fill="url(#paint0_linear)"/>
+  
+  <!-- Logo -->
+  <g transform="translate(100, 165) scale(0.6)">
+    <circle cx="256" cy="256" r="248" fill="white" fill-opacity="0.1" stroke="white" stroke-width="16"/>
+    <path d="M175 160C175 154.477 179.477 150 185 150H225C266.421 150 300 183.579 300 225C300 266.421 266.421 300 225 300H185C179.477 300 175 295.523 175 290V160Z" fill="white"/>
+    <path d="M205 180V270H225C250.405 270 271 249.405 271 224C271 198.595 250.405 178 225 178H205Z" fill="white" fill-opacity="0.3"/>
+    <path d="M320 150L370 290M370 150L320 290" stroke="white" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="450" y="250" fill="white" font-family="system-ui, -apple-system" font-size="72" font-weight="bold">CV Gennies</text>
+  <text x="450" y="330" fill="white" fill-opacity="0.8" font-family="system-ui, -apple-system" font-size="36">Professional Resume Builder</text>
+  
+  <!-- Decorative Elements -->
+  <circle cx="1100" cy="100" r="40" fill="white" fill-opacity="0.1"/>
+  <circle cx="100" cy="530" r="60" fill="white" fill-opacity="0.1"/>
+  
+  <!-- Gradient Definitions -->
+  <defs>
+    <linearGradient id="paint0_linear" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+  </defs>
+</svg>
