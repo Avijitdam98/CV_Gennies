@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { HiOutlineLockClosed, HiOutlineSparkles, HiOutlineStar } from 'react-icons/hi';
+import { HiOutlineLockClosed, HiOutlineSparkles, HiOutlineStar } from 'react-icons/hi2';
 
 const templates = [
   {
