@@ -13,6 +13,8 @@ const shareRoutes = require('./routes/shareRoutes');
 const templateRoutes = require('./routes/templateRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
+const authRoutes = require('./routes/auth');
+const usersRoutes = require('./routes/users');
 
 dotenv.config();
 
@@ -29,7 +31,8 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch((err) => console.error('MongoDB connection error:', err));
 
 // Routes
-app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', usersRoutes);
 app.use('/api/resumes', resumeRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/admin', adminRoutes);

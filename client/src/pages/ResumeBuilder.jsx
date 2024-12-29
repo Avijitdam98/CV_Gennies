@@ -1,7 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { ArrowLeft, Save, Download } from 'lucide-react';
+import toast from 'react-hot-toast';
+import debounce from 'lodash/debounce';
 import PersonalInfoForm from '../components/resume/PersonalInfoForm';
 import EducationForm from '../components/resume/EducationForm';
 import ExperienceForm from '../components/resume/ExperienceForm';
@@ -12,155 +14,143 @@ import LanguagesForm from '../components/resume/LanguagesForm';
 import AwardsForm from '../components/resume/AwardsForm';
 import ResumePreview from '../components/resume/ResumePreview';
 import TemplateSelector from '../components/resume/TemplateSelector';
-import { useSelector } from 'react-redux';
 
 const ResumeBuilder = () => {
-  const subscription = useSelector((state) => state.subscription);
-  const [activeSections, setActiveSections] = useState({
-    personalInfo: true,
-    skills: false,
-    experience: false,
-    education: false,
-    projects: false,
-    certifications: false,
-    languages: false,
-    awards: false,
-  });
-
-  const sections = [
-    { id: 'personalInfo', title: 'Personal Information', icon: 'user', component: PersonalInfoForm },
-    { id: 'skills', title: 'Skills', icon: 'code', component: SkillsForm },
-    { id: 'experience', title: 'Work Experience', icon: 'briefcase', component: ExperienceForm },
-    { id: 'education', title: 'Education', icon: 'academic-cap', component: EducationForm },
-    { id: 'projects', title: 'Projects', icon: 'document', component: ProjectsForm },
-    { id: 'certifications', title: 'Certifications', icon: 'badge', component: CertificationsForm },
-    { id: 'languages', title: 'Languages', icon: 'translate', component: LanguagesForm },
-    { id: 'awards', title: 'Awards', icon: 'award', component: AwardsForm },
-  ];
-
-  const [selectedTemplate, setSelectedTemplate] = useState('modern');
-
+  const { id } = useParams(); // Get resume ID from URL if editing
+  const navigate = useNavigate();
+  const { token } = useSelector((state) => state.auth);
+  const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('saved'); // 'saved', 'saving', 'error'
+  const [lastSaveTime, setLastSaveTime] = useState(Date.now());
   const [resumeData, setResumeData] = useState({
+    template: 'modern',
     personalInfo: {},
-    skills: [],
-    experience: [],
     education: [],
+    experience: [],
+    skills: [],
     projects: [],
     certifications: [],
     languages: [],
-    awards: [],
-    template: 'modern',
+    awards: []
   });
 
-  const getIcon = (iconName) => {
-    const icons = {
-      user: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-      ),
-      'academic-cap': (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path d="M12 14l9-5-9-5-9 5 9 5z" />
-          <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 20v-6" />
-        </svg>
-      ),
-      briefcase: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>
-      ),
-      code: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4M12 14l.01 0" />
-        </svg>
-      ),
-      document: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-      ),
-      badge: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-        </svg>
-      ),
-      translate: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-        </svg>
-      ),
-      award: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-        </svg>
-      ),
+  // Fetch resume data if editing
+  useEffect(() => {
+    const fetchResume = async () => {
+      if (!id) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        console.log('Fetching resume:', id);
+        const response = await fetch(`http://localhost:5000/api/resumes/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+        });
+
+        const data = await response.json();
+        console.log('Resume fetch response:', data);
+
+        if (!response.ok) {
+          throw new Error(data.details || data.message || 'Failed to fetch resume');
+        }
+
+        if (data.success && data.data) {
+          setResumeData(data.data);
+        } else {
+          throw new Error(data.message || 'Failed to fetch resume');
+        }
+      } catch (err) {
+        console.error('Error fetching resume:', err);
+        toast.error(err.message || 'Failed to load resume');
+        navigate('/my-resumes');
+      } finally {
+        setLoading(false);
+      }
     };
-    return icons[iconName];
-  };
 
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
-  const previewRef = useRef(null);
+    fetchResume();
+  }, [id, token, navigate]);
 
-  const handleDownloadPDF = async () => {
-    if (!previewRef.current) return;
+  // Show save toast every 20 seconds
+  useEffect(() => {
+    const showSaveToast = () => {
+      if (saveStatus === 'saved' && Date.now() - lastSaveTime < 20000) {
+        toast.success('Resume saved successfully!', {
+          icon: '✅',
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+      }
+    };
+
+    const interval = setInterval(showSaveToast, 20000);
+    return () => clearInterval(interval);
+  }, [saveStatus, lastSaveTime]);
+
+  // Save resume function
+  const saveResume = async (data) => {
+    setIsSaving(true);
+    setSaveStatus('saving');
     
-    setIsGeneratingPdf(true);
     try {
-      const preview = previewRef.current;
-      const canvas = await html2canvas(preview, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
+      const url = id
+        ? `http://localhost:5000/api/resumes/${id}`
+        : 'http://localhost:5000/api/resumes';
+      
+      const method = id ? 'PUT' : 'POST';
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
       });
 
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      if (!response.ok) throw new Error('Failed to save resume');
+
+      setSaveStatus('saved');
+      setLastSaveTime(Date.now());
       
-      // Add first page
-      pdf.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight, '', 'FAST');
-      heightLeft -= pageHeight;
+      // Show immediate save confirmation
+      toast.success('Changes saved!', {
+        icon: '💾',
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      });
 
-      // Add subsequent pages if needed
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight, '', 'FAST');
-        heightLeft -= pageHeight;
+      if (!id) {
+        const result = await response.json();
+        navigate(`/edit-resume/${result.data._id}`, { replace: true });
       }
-
-      // Save the PDF
-      pdf.save(`${resumeData.personalInfo?.fullName || 'resume'}.pdf`);
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error('Error saving resume:', error);
+      setSaveStatus('error');
+      toast.error('Failed to save changes');
     } finally {
-      setIsGeneratingPdf(false);
+      setIsSaving(false);
     }
   };
 
-  // Load from localStorage on initial mount
-  useEffect(() => {
-    const savedData = localStorage.getItem('resumeData');
-    if (savedData) {
-      try {
-        setResumeData(JSON.parse(savedData));
-      } catch (error) {
-        console.error('Error loading saved resume data:', error);
-      }
-    }
-  }, []);
+  // Debounce save function
+  const debouncedSave = useCallback(
+    debounce((data) => saveResume(data), 1000),
+    [id, token]
+  );
 
   const handleUpdateSection = (sectionId, data) => {
     setResumeData((prev) => {
-      // Check if data has actually changed
       if (JSON.stringify(prev[sectionId]) === JSON.stringify(data)) {
         return prev;
       }
@@ -169,21 +159,85 @@ const ResumeBuilder = () => {
         ...prev,
         [sectionId]: data,
       };
-      // Save to localStorage immediately after update
+      
+      // Save to localStorage
       localStorage.setItem('resumeData', JSON.stringify(newData));
+      
+      // Trigger auto-save if editing existing resume
+      if (id) {
+        debouncedSave(newData);
+      }
+      
       return newData;
     });
   };
 
-  const toggleSection = (sectionId) => {
-    setActiveSections(prev => ({
-      ...prev,
-      [sectionId]: !prev[sectionId]
-    }));
+  // Handle back navigation
+  const handleBack = () => {
+    if (id) {
+      navigate('/my-resumes');
+    } else {
+      // If creating new resume, ask for confirmation
+      if (window.confirm('Are you sure you want to go back? Any unsaved changes will be lost.')) {
+        navigate('/my-resumes');
+      }
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Header with actions */}
+      <div className="bg-white shadow">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={handleBack}
+                className="flex items-center text-gray-600 hover:text-gray-900"
+              >
+                <ArrowLeft className="h-5 w-5 mr-2" />
+                Back to My Resumes
+              </button>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">
+                {saveStatus === 'saved' && 'All changes saved'}
+                {saveStatus === 'saving' && 'Saving...'}
+                {saveStatus === 'error' && 'Error saving'}
+              </span>
+              <button
+                onClick={() => saveResume(resumeData)}
+                disabled={isSaving}
+                className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+                  isSaving
+                    ? 'bg-primary-400 cursor-not-allowed'
+                    : 'bg-primary-600 hover:bg-primary-700'
+                }`}
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {isSaving ? 'Saving...' : 'Save Resume'}
+              </button>
+              <button
+                onClick={() => {/* Add download logic */}}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Resume sections */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Forms */}
@@ -193,9 +247,8 @@ const ResumeBuilder = () => {
             {/* Template Selection */}
             <div className="bg-white shadow rounded-lg overflow-hidden">
               <TemplateSelector
-                selectedTemplate={selectedTemplate}
-                onSelect={setSelectedTemplate}
-                subscription={subscription}
+                selectedTemplate={resumeData.template}
+                onSelect={(template) => handleUpdateSection('template', template)}
               />
             </div>
 
@@ -205,44 +258,38 @@ const ResumeBuilder = () => {
             </div>
 
             <div className="space-y-4">
-              {sections.map((section) => (
-                <div key={section.id} className="bg-white shadow rounded-lg overflow-hidden">
-                  <div 
-                    className="p-4 bg-gray-50 cursor-pointer flex justify-between items-center"
-                    onClick={() => toggleSection(section.id)}
-                  >
-                    <div className="flex items-center">
-                      <span className="mr-2">{getIcon(section.icon)}</span>
-                      <h2 className="text-lg font-medium text-gray-900">
-                        {section.title}
-                      </h2>
-                    </div>
-                    <svg
-                      className={`w-5 h-5 transform transition-transform ${
-                        activeSections[section.id] ? 'rotate-180' : ''
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
-                  {activeSections[section.id] && (
-                    <div className="p-6 border-t">
-                      <section.component
-                        data={resumeData[section.id]}
-                        onChange={(data) => handleUpdateSection(section.id, data)}
-                      />
-                    </div>
-                  )}
-                </div>
-              ))}
+              <PersonalInfoForm 
+                data={resumeData.personalInfo} 
+                onChange={(data) => handleUpdateSection('personalInfo', data)} 
+              />
+              <EducationForm 
+                data={resumeData.education} 
+                onChange={(data) => handleUpdateSection('education', data)} 
+              />
+              <ExperienceForm 
+                data={resumeData.experience} 
+                onChange={(data) => handleUpdateSection('experience', data)} 
+              />
+              <SkillsForm 
+                data={resumeData.skills} 
+                onChange={(data) => handleUpdateSection('skills', data)} 
+              />
+              <ProjectsForm 
+                data={resumeData.projects} 
+                onChange={(data) => handleUpdateSection('projects', data)} 
+              />
+              <CertificationsForm 
+                data={resumeData.certifications} 
+                onChange={(data) => handleUpdateSection('certifications', data)} 
+              />
+              <LanguagesForm 
+                data={resumeData.languages} 
+                onChange={(data) => handleUpdateSection('languages', data)} 
+              />
+              <AwardsForm 
+                data={resumeData.awards} 
+                onChange={(data) => handleUpdateSection('awards', data)} 
+              />
             </div>
           </div>
 
@@ -250,35 +297,12 @@ const ResumeBuilder = () => {
           <div className="lg:sticky lg:top-8 space-y-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900">Preview</h2>
-              <button
-                onClick={handleDownloadPDF}
-                disabled={isGeneratingPdf}
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isGeneratingPdf ? (
-                  <div className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Generating PDF...
-                  </div>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Download PDF
-                  </>
-                )}
-              </button>
             </div>
 
             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
               <ResumePreview 
                 data={resumeData} 
-                selectedTemplate={selectedTemplate}
-                ref={previewRef}
+                selectedTemplate={resumeData.template}
               />
             </div>
           </div>

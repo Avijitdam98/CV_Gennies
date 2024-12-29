@@ -8,7 +8,8 @@ const resumeSchema = new mongoose.Schema({
   },
   template: {
     type: String,
-    required: true
+    required: true,
+    default: 'modern'
   },
   personalInfo: {
     fullName: String,
@@ -16,8 +17,11 @@ const resumeSchema = new mongoose.Schema({
     phone: String,
     address: String,
     linkedin: String,
+    github: String,
     website: String,
-    summary: String
+    summary: String,
+    jobTitle: String,
+    profileImage: String
   },
   education: [{
     institution: String,
@@ -26,7 +30,8 @@ const resumeSchema = new mongoose.Schema({
     startDate: Date,
     endDate: Date,
     grade: String,
-    description: String
+    description: String,
+    location: String
   }],
   experience: [{
     company: String,
@@ -35,20 +40,48 @@ const resumeSchema = new mongoose.Schema({
     startDate: Date,
     endDate: Date,
     current: Boolean,
-    description: String
+    description: String,
+    highlights: [String],
+    technologies: [String]
   }],
   skills: [{
     name: String,
     level: {
       type: String,
       enum: ['Beginner', 'Intermediate', 'Advanced', 'Expert']
-    }
+    },
+    category: String
   }],
   projects: [{
     title: String,
     description: String,
     technologies: [String],
-    link: String
+    link: String,
+    github: String,
+    image: String,
+    startDate: Date,
+    endDate: Date,
+    highlights: [String]
+  }],
+  certifications: [{
+    name: String,
+    issuer: String,
+    date: Date,
+    link: String,
+    description: String
+  }],
+  languages: [{
+    name: String,
+    proficiency: {
+      type: String,
+      enum: ['Basic', 'Conversational', 'Fluent', 'Native']
+    }
+  }],
+  awards: [{
+    title: String,
+    issuer: String,
+    date: Date,
+    description: String
   }],
   shareableLink: {
     type: String,
@@ -58,9 +91,19 @@ const resumeSchema = new mongoose.Schema({
   isPublic: {
     type: Boolean,
     default: false
+  },
+  lastEdited: {
+    type: Date,
+    default: Date.now
   }
 }, {
   timestamps: true
+});
+
+// Update lastEdited timestamp on save
+resumeSchema.pre('save', function(next) {
+  this.lastEdited = new Date();
+  next();
 });
 
 const Resume = mongoose.model('Resume', resumeSchema);

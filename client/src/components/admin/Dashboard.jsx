@@ -1,7 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+import { Line } from "react-chartjs-2";
 import axios from 'axios';
 import { motion } from 'framer-motion';
+
+// Register ChartJS components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const Dashboard = () => {
   const [analytics, setAnalytics] = useState(null);
@@ -39,6 +60,71 @@ const Dashboard = () => {
     );
   }
 
+  const chartData = {
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    datasets: [
+      {
+        label: 'New Users',
+        data: [12, 19, 3, 5, 2, 3, 7],
+        borderColor: 'rgb(99, 102, 241)',
+        tension: 0.4,
+      },
+      {
+        label: 'Active Users',
+        data: [30, 29, 35, 40, 38, 32, 37],
+        borderColor: 'rgb(34, 197, 94)',
+        tension: 0.4,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
+    plugins: {
+      legend: {
+        position: 'bottom',
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
+
+  const revenueChartData = {
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    datasets: [
+      {
+        label: 'Revenue',
+        data: [1200, 1900, 300, 500, 200, 300, 700],
+        borderColor: 'rgb(234, 179, 8)',
+        tension: 0.4,
+      },
+    ],
+  };
+
+  const revenueChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: (value) => `₹${value}`,
+        },
+      },
+    },
+  };
+
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Dashboard</h1>
@@ -75,75 +161,12 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">User Activity</h2>
-          <Line
-            data={{
-              labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-              datasets: [
-                {
-                  label: 'New Users',
-                  data: [12, 19, 3, 5, 2, 3, 7],
-                  borderColor: 'rgb(99, 102, 241)',
-                  tension: 0.4,
-                },
-                {
-                  label: 'Active Users',
-                  data: [30, 29, 35, 40, 38, 32, 37],
-                  borderColor: 'rgb(34, 197, 94)',
-                  tension: 0.4,
-                },
-              ],
-            }}
-            options={{
-              responsive: true,
-              interaction: {
-                mode: 'index',
-                intersect: false,
-              },
-              plugins: {
-                legend: {
-                  position: 'bottom',
-                },
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                },
-              },
-            }}
-          />
+          <Line data={chartData} options={chartOptions} />
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">Revenue</h2>
-          <Line
-            data={{
-              labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-              datasets: [
-                {
-                  label: 'Revenue',
-                  data: [1200, 1900, 300, 500, 200, 300, 700],
-                  borderColor: 'rgb(234, 179, 8)',
-                  tension: 0.4,
-                },
-              ],
-            }}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: 'bottom',
-                },
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  ticks: {
-                    callback: (value) => `₹${value}`,
-                  },
-                },
-              },
-            }}
-          />
+          <Line data={revenueChartData} options={revenueChartOptions} />
         </div>
       </div>
 

@@ -1,0 +1,42 @@
+/* Z-index hierarchy system
+ * 
+ * Base layers: 1-10
+ * Components: 11-100
+ * Overlays: 101-200
+ * Modals: 201-300
+ * Tooltips: 301-400
+ * Notifications: 401-500
+ * Maximum z-index: 9999 (reserved for critical overlays)
+ */
+
+:root {
+  /* Base layers */
+  --z-background: 1;
+  --z-content: 10;
+
+  /* Components */
+  --z-header: 50;
+  --z-navbar: 60;
+  --z-dropdown: 70;
+  --z-sidebar: 80;
+  --z-floating-button: 90;
+
+  /* Overlays */
+  --z-overlay: 101;
+  --z-drawer: 150;
+  --z-modal-overlay: 201;
+  --z-modal: 202;
+  
+  /* Tooltips */
+  --z-tooltip: 301;
+  --z-popover: 302;
+
+  /* Notifications */
+  --z-toast: 401;
+  --z-notification: 402;
+
+  /* Critical overlays */
+  --z-loading: 9997;
+  --z-error: 9998;
+  --z-critical: 9999;
+}

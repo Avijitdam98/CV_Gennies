@@ -1,42 +1,78 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { FileText, Plus, Edit2, Trash2, Loader2 } from 'lucide-react';
+import { FileText, Plus, Edit2, Trash2, Loader2, RefreshCw } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const MyResumes = () => {
   const [resumes, setResumes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [lastUpdate, setLastUpdate] = useState(Date.now());
   const navigate = useNavigate();
-  const { token } = useSelector((state) => state.auth);
+  const location = useLocation();
+  const { token, user } = useSelector((state) => state.auth);
+
+  const fetchResumes = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      if (!token) {
+        throw new Error('Not authenticated');
+      }
+
+      console.log('Fetching resumes with token:', token);
+      const response = await fetch('http://localhost:5000/api/resumes', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch resumes');
+      }
+
+      const data = await response.json();
+      console.log('Fetched resumes:', data);
+      
+      if (data.success) {
+        setResumes(data.data || []);
+      } else {
+        throw new Error(data.message || 'Failed to fetch resumes');
+      }
+    } catch (err) {
+      console.error('Error fetching resumes:', err);
+      setError(err.message);
+      if (err.message === 'Not authenticated') {
+        navigate('/login');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchResumes = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('http://localhost:5000/api/resumes', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch resumes');
-        }
-
-        const data = await response.json();
-        setResumes(data.resumes || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (token) {
       fetchResumes();
+    } else {
+      navigate('/login');
     }
-  }, [token]);
+  }, [token, lastUpdate]);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      console.log('Window focused, refreshing resumes');
+      setLastUpdate(Date.now());
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
 
   const handleCreateNew = () => {
     navigate('/create-resume');
@@ -44,6 +80,11 @@ const MyResumes = () => {
 
   const handleEditResume = (id) => {
     navigate(`/edit-resume/${id}`);
+  };
+
+  const handleRefresh = () => {
+    console.log('Manual refresh triggered');
+    setLastUpdate(Date.now());
   };
 
   const handleDeleteResume = async (id) => {
@@ -55,7 +96,8 @@ const MyResumes = () => {
       const response = await fetch(`http://localhost:5000/api/resumes/${id}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
       });
 
@@ -63,105 +105,127 @@ const MyResumes = () => {
         throw new Error('Failed to delete resume');
       }
 
-      setResumes((prevResumes) => prevResumes.filter((resume) => resume._id !== id));
+      const data = await response.json();
+      if (data.success) {
+        setResumes((prevResumes) => prevResumes.filter((resume) => resume._id !== id));
+        toast.success('Resume deleted successfully');
+      } else {
+        throw new Error(data.message || 'Failed to delete resume');
+      }
     } catch (err) {
-      setError(err.message);
+      console.error('Error deleting resume:', err);
+      toast.error(err.message || 'Failed to delete resume');
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Error</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="text-primary-600 hover:text-primary-700"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
+  if (!token) {
+    navigate('/login');
+    return null;
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">My Resumes</h1>
-        <button
-          onClick={handleCreateNew}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-        >
-          <Plus className="h-5 w-5 mr-2" />
-          Create New Resume
-        </button>
-      </div>
-
-      {resumes.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg shadow-sm">
-          <FileText className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No resumes</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Get started by creating a new resume
-          </p>
-          <div className="mt-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header Section */}
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
+            My Resumes
+          </h1>
+          <div className="flex items-center gap-4">
             <button
-              onClick={handleCreateNew}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              onClick={() => setLastUpdate(Date.now())}
+              className="inline-flex items-center px-4 py-2 rounded-xl bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-all duration-200 shadow-sm"
             >
-              <Plus className="h-5 w-5 mr-2" />
+              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+            <button
+              onClick={() => navigate('/create-resume')}
+              className="inline-flex items-center px-6 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+            >
+              <Plus className="w-5 h-5 mr-2" />
               Create New Resume
             </button>
           </div>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {resumes.map((resume) => (
-            <div
-              key={resume._id}
-              className="bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-shadow duration-200"
-            >
-              <div className="px-4 py-5 sm:px-6">
-                <h3 className="text-lg font-medium text-gray-900 truncate">
-                  {resume.personalInfo?.fullName || 'Untitled Resume'}
-                </h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  Last updated:{' '}
-                  {new Date(resume.updatedAt).toLocaleDateString()}
-                </p>
-              </div>
-              <div className="px-4 py-4 sm:px-6 bg-gray-50 border-t border-gray-100">
-                <div className="flex space-x-3">
-                  <button
-                    onClick={() => handleEditResume(resume._id)}
-                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                  >
-                    <Edit2 className="h-4 w-4 mr-2" />
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteResume(resume._id)}
-                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete
-                  </button>
+
+        {/* Loading State */}
+        {loading && (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && !loading && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+            <p className="text-red-600">{error}</p>
+          </div>
+        )}
+
+        {/* Resumes Grid */}
+        {!loading && !error && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {resumes.map((resume) => (
+              <div
+                key={resume._id}
+                className="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-5 transition-opacity duration-300"></div>
+                <div className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <FileText className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                        {resume.personalInfo?.fullName || 'Untitled Resume'}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        Last updated: {new Date(resume.updatedAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6 flex items-center gap-3">
+                    <button
+                      onClick={() => navigate(`/edit-resume/${resume._id}`)}
+                      className="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors duration-200"
+                    >
+                      <Edit2 className="w-4 h-4 mr-2" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteResume(resume._id)}
+                      className="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors duration-200"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+            
+            {resumes.length === 0 && !loading && (
+              <div className="col-span-full text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FileText className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No resumes yet</h3>
+                <p className="text-gray-500 mb-6">Create your first resume to get started</p>
+                <button
+                  onClick={() => navigate('/create-resume')}
+                  className="inline-flex items-center px-6 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 transition-all duration-200"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  Create New Resume
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

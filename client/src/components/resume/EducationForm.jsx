@@ -2,12 +2,26 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const EducationForm = ({ data = [], onChange }) => {
-  const [educationList, setEducationList] = useState(data);
+  // Initialize education list with default values to prevent null
+  const initializeEducation = (eduData) => {
+    return eduData.map((edu) => ({
+      id: edu.id || Date.now(),
+      institution: edu.institution || '',
+      degree: edu.degree || '',
+      field: edu.field || '',
+      startDate: edu.startDate || '',
+      endDate: edu.endDate || '',
+      grade: edu.grade || '',
+      description: edu.description || '',
+    }));
+  };
+
+  const [educationList, setEducationList] = useState(initializeEducation(data));
 
   // Sync with parent data changes
   useEffect(() => {
     if (JSON.stringify(data) !== JSON.stringify(educationList)) {
-      setEducationList(data);
+      setEducationList(initializeEducation(data));
     }
   }, [data]);
 
