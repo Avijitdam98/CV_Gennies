@@ -7,21 +7,21 @@ const Blog = () => {
       title: '10 Tips for Writing a Perfect Resume',
       excerpt: 'Learn how to create a resume that stands out and gets you noticed by recruiters.',
       author: 'Sarah Johnson',
-      date: 'Dec 25, 2023',
+      date: 'Dec 25, 2024',
       category: 'Resume Tips'
     },
     {
       title: 'The Future of AI in Resume Writing',
       excerpt: 'Discover how artificial intelligence is revolutionizing the way we create resumes.',
       author: 'Mike Chen',
-      date: 'Dec 20, 2023',
+      date: 'Dec 20, 2024',
       category: 'Technology'
     },
     {
       title: 'Common Resume Mistakes to Avoid',
       excerpt: "Don't let these common mistakes hold you back from landing your dream job.",
       author: 'Emily Brown',
-      date: 'Dec 15, 2023',
+      date: 'Dec 15, 2024',
       category: 'Career Advice'
     }
   ];

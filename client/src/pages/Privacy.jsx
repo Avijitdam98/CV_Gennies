@@ -67,7 +67,7 @@ const Privacy = () => {
           </section>
 
           <section>
-            <p className="text-sm text-gray-600">Last Updated: December 30, 2023</p>
+            <p className="text-sm text-gray-600">Last Updated: December 30, 2024</p>
           </section>
         </motion.div>
       </div>
