@@ -26,6 +26,7 @@ import Help from './pages/Help.jsx';
 import CareerAdvice from './pages/CareerAdvice.jsx';
 import Tips from './pages/Tips.jsx';
 import Examples from './pages/Examples.jsx';
+import Preview from './pages/Preview.jsx';
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
               <Route path="/examples" element={<Examples />} />
               <Route path="/resume-builder" element={<ResumeBuilder />} />
               <Route path="/resume-builder/:id" element={<ResumeBuilder />} />
+              <Route path="/preview/:templateId" element={<Preview />} />
               <Route
                 path="/dashboard"
                 element={

@@ -41,7 +41,7 @@ const Examples = () => {
   ];
 
   const handleTemplateClick = (templateId) => {
-    navigate('/resume-builder', { state: { template: templateId } });
+    navigate(`/preview/${templateId}`);
   };
 
   return (
