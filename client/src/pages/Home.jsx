@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import FAQ from '../components/common/FAQ';
+import Footer from '../components/common/Footer';
 
 const Home = () => {
   const fadeIn = {
@@ -140,6 +142,23 @@ const Home = () => {
           </motion.div>
         </div>
       </section>
+            {/* FAQ Section */}
+            <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <FAQ />
+      </motion.section>
+
+      {/* Footer */}
+      <motion.footer
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+      >
+        <Footer />
+      </motion.footer>
     </div>
   );
 };

@@ -15,6 +15,16 @@ import SharedResume from './pages/SharedResume';
 import Subscription from './pages/Subscription';
 import AdminDashboard from './components/admin/Dashboard';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import Features from './pages/Features.jsx';
+import Pricing from './pages/Pricing.jsx';
+import Blog from './pages/Blog.jsx';
+import Contact from './pages/Contact.jsx';
+import About from './pages/About.jsx';
+import Privacy from './pages/Privacy.jsx';
+import Terms from './pages/Terms.jsx';
+import Help from './pages/Help.jsx';
+import CareerAdvice from './pages/CareerAdvice.jsx';
+import Tips from './pages/Tips.jsx';
 
 function App() {
   return (
@@ -29,6 +39,16 @@ function App() {
               <Route path="/templates" element={<Templates />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/features" element={<Features />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/help" element={<Help />} />
+              <Route path="/career-advice" element={<CareerAdvice />} />
+              <Route path="/tips" element={<Tips />} />
               <Route
                 path="/dashboard"
                 element={
