@@ -1,10 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import FAQ from '../components/common/FAQ';
 import Footer from '../components/common/Footer';
 
 const Home = () => {
+  const [showPrivacyBanner, setShowPrivacyBanner] = useState(false);
+
+  useEffect(() => {
+    const hasAcceptedPrivacy = localStorage.getItem('privacyAccepted');
+    const hasRejectedPrivacy = localStorage.getItem('privacyRejected');
+    
+    if (!hasAcceptedPrivacy && !hasRejectedPrivacy) {
+      setShowPrivacyBanner(true);
+    }
+  }, []);
+
+  const handleAcceptPrivacy = () => {
+    localStorage.setItem('privacyAccepted', 'true');
+    setShowPrivacyBanner(false);
+  };
+
+  const handleRejectPrivacy = () => {
+    localStorage.setItem('privacyRejected', 'true');
+    setShowPrivacyBanner(false);
+  };
+
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -43,6 +64,41 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      {/* Privacy Policy Banner */}
+      {showPrivacyBanner && (
+        <motion.div 
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed bottom-0 left-0 right-0 bg-white shadow-lg z-50 border-t border-gray-200"
+        >
+          <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-sm text-gray-700">
+                We use cookies and similar technologies to help personalize content, tailor and measure ads, and provide a better experience. 
+                By clicking 'Accept', you agree to this use of cookies and data. 
+                <Link to="/privacy" className="text-blue-600 hover:text-blue-700 ml-1">
+                  Learn more in our Privacy Policy
+                </Link>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleRejectPrivacy}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                >
+                  Reject
+                </button>
+                <button
+                  onClick={handleAcceptPrivacy}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Accept
+                </button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Hero Section */}
       <div className="relative -mt-8 pb-20 sm:pb-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

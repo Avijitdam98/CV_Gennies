@@ -253,118 +253,100 @@ const ResumeBuilder = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header with actions */}
-      <div className="bg-white shadow">
-        <div className="px-4 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={handleBack}
-                className="flex items-center text-gray-600 hover:text-gray-900"
-              >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Back to My Resumes
-              </button>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">
-                {saveStatus === "saved" && "All changes saved"}
-                {saveStatus === "saving" && "Saving..."}
-                {saveStatus === "error" && "Error saving"}
-              </span>
-              <button
-                onClick={() => saveResume(resumeData)}
-                disabled={isSaving}
-                className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-                  isSaving
-                    ? "bg-primary-400 cursor-not-allowed"
-                    : "bg-primary-600 hover:bg-primary-700"
-                }`}
-              >
-                <Save className="w-4 h-4 mr-2" />
-                {isSaving ? "Saving..." : "Save Resume"}
-              </button>
-              <button
-                onClick={handleDownloadPDF}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download PDF
-              </button>
-            </div>
-          </div>
+      <div className="max-w-6xl mx-auto px-4 sm:px-5 lg:px-6 py-6">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Create Your Resume</h1>
+          <p className="text-sm text-gray-600">Fill in your details below to generate your professional resume.</p>
         </div>
-      </div>
 
-      {/* Resume sections */}
-      <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {/* Left Column - Forms */}
-          <div className="space-y-6">
-            <h1 className="mb-8 text-3xl font-bold text-gray-900">
-              Create Your Resume
-            </h1>
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Form Section */}
+          <div className="lg:col-span-7 space-y-5">
+            <div className="bg-white rounded-lg shadow-sm p-5">
+              {/* Template Selection */}
+              <div className="mb-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Template Selection</h2>
+                <TemplateSelector
+                  selectedTemplate={resumeData.template}
+                  onSelect={(template) =>
+                    handleUpdateSection("template", template)
+                  }
+                />
+              </div>
 
-            {/* Template Selection */}
-            <div className="overflow-hidden bg-white rounded-lg shadow">
-              <TemplateSelector
-                selectedTemplate={resumeData.template}
-                onSelect={(template) =>
-                  handleUpdateSection("template", template)
-                }
-              />
-            </div>
-
-            {/* Section Forms */}
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-gray-900">
-                Resume Builder
-              </h1>
-            </div>
-
-            <div className="space-y-4">
-              <PersonalInfoForm
-                data={resumeData.personalInfo}
-                onChange={(data) => handleUpdateSection("personalInfo", data)}
-              />
-              <EducationForm
-                data={resumeData.education}
-                onChange={(data) => handleUpdateSection("education", data)}
-              />
-              <ExperienceForm
-                data={resumeData.experience}
-                onChange={(data) => handleUpdateSection("experience", data)}
-              />
-              <SkillsForm
-                data={resumeData.skills}
-                onChange={(data) => handleUpdateSection("skills", data)}
-              />
-              <ProjectsForm
-                data={resumeData.projects}
-                onChange={(data) => handleUpdateSection("projects", data)}
-              />
-              <CertificationsForm
-                data={resumeData.certifications}
-                onChange={(data) => handleUpdateSection("certifications", data)}
-              />
-              <LanguagesForm
-                data={resumeData.languages}
-                onChange={(data) => handleUpdateSection("languages", data)}
-              />
-              <AwardsForm
-                data={resumeData.awards}
-                onChange={(data) => handleUpdateSection("awards", data)}
-              />
+              {/* Section Forms */}
+              <div className="space-y-4">
+                <PersonalInfoForm
+                  data={resumeData.personalInfo}
+                  onChange={(data) => handleUpdateSection("personalInfo", data)}
+                />
+                <EducationForm
+                  data={resumeData.education}
+                  onChange={(data) => handleUpdateSection("education", data)}
+                />
+                <ExperienceForm
+                  data={resumeData.experience}
+                  onChange={(data) => handleUpdateSection("experience", data)}
+                />
+                <SkillsForm
+                  data={resumeData.skills}
+                  onChange={(data) => handleUpdateSection("skills", data)}
+                />
+                <ProjectsForm
+                  data={resumeData.projects}
+                  onChange={(data) => handleUpdateSection("projects", data)}
+                />
+                <CertificationsForm
+                  data={resumeData.certifications}
+                  onChange={(data) => handleUpdateSection("certifications", data)}
+                />
+                <LanguagesForm
+                  data={resumeData.languages}
+                  onChange={(data) => handleUpdateSection("languages", data)}
+                />
+                <AwardsForm
+                  data={resumeData.awards}
+                  onChange={(data) => handleUpdateSection("awards", data)}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Right Column - Preview */}
-          <div className="sticky top-8">
-            <ResumePreview
-              ref={resumeRef}
-              data={resumeData}
-              selectedTemplate={resumeData.template}
-            />
+          {/* Preview Section */}
+          <div className="lg:col-span-5">
+            <div className="bg-white rounded-lg shadow-sm p-5 sticky top-20">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Preview</h2>
+              <div className="aspect-[1/1.4] bg-gray-100 rounded-md overflow-hidden">
+                <ResumePreview
+                  ref={resumeRef}
+                  data={resumeData}
+                  selectedTemplate={resumeData.template}
+                />
+              </div>
+              <div className="mt-4 flex space-x-3">
+                <button
+                  onClick={() => saveResume(resumeData)}
+                  disabled={isSaving}
+                  className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+                    isSaving
+                      ? "bg-primary-400 cursor-not-allowed"
+                      : "bg-primary-600 hover:bg-primary-700"
+                  }`}
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {isSaving ? "Saving..." : "Save Resume"}
+                </button>
+                <button
+                  onClick={handleDownloadPDF}
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download PDF
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
