@@ -1,43 +1,79 @@
 const express = require('express');
 const router = express.Router();
 const Resume = require('../models/Resume');
-const { protect } = require('../middleware/auth');
+const { protect } = require('../middleware/authMiddleware');
+const { checkResumeLimit } = require('../middleware/subscriptionMiddleware');
 
 // Get all resumes for current user
 router.get('/', protect, async (req, res) => {
   try {
-    console.log('Fetching resumes for user:', req.user.id);
-    const resumes = await Resume.find({ user: req.user.id });
-    console.log('Found resumes:', resumes.length);
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not authenticated'
+      });
+    }
+
+    const resumes = await Resume.find({ user: req.user.id })
+      .sort({ updatedAt: -1 })
+      .select('-__v');
+
     res.json({
       success: true,
+      count: resumes.length,
       data: resumes
     });
   } catch (err) {
     console.error('Error fetching resumes:', err);
     res.status(500).json({
       success: false,
-      message: 'Server Error'
+      message: 'Error fetching resumes',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }
 });
 
 // Create new resume
-router.post('/', protect, async (req, res) => {
+router.post('/', protect, checkResumeLimit, async (req, res) => {
   try {
-    const resume = await Resume.create({
-      ...req.body,
-      user: req.user.id
-    });
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not authenticated'
+      });
+    }
+
+    const resumeData = {
+      user: req.user.id,
+      template: req.body.template || 'modern',
+      personalInfo: req.body.personalInfo || {
+        fullName: '',
+        email: '',
+        phone: '',
+        address: '',
+        summary: ''
+      },
+      education: req.body.education || [],
+      experience: req.body.experience || [],
+      skills: req.body.skills || [],
+      projects: req.body.projects || [],
+      certifications: req.body.certifications || [],
+      languages: req.body.languages || [],
+      awards: req.body.awards || []
+    };
+
+    const resume = await Resume.create(resumeData);
 
     res.status(201).json({
       success: true,
       data: resume
     });
   } catch (err) {
+    console.error('Error creating resume:', err);
     res.status(500).json({
       success: false,
-      message: 'Server Error'
+      message: 'Error creating resume',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }
 });
@@ -45,6 +81,13 @@ router.post('/', protect, async (req, res) => {
 // Get single resume by ID
 router.get('/:id', protect, async (req, res) => {
   try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not authenticated'
+      });
+    }
+
     const resume = await Resume.findById(req.params.id);
 
     if (!resume) {
@@ -67,9 +110,11 @@ router.get('/:id', protect, async (req, res) => {
       data: resume
     });
   } catch (err) {
+    console.error('Error fetching resume:', err);
     res.status(500).json({
       success: false,
-      message: 'Server Error'
+      message: 'Error fetching resume',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }
 });
@@ -77,7 +122,14 @@ router.get('/:id', protect, async (req, res) => {
 // Update resume
 router.put('/:id', protect, async (req, res) => {
   try {
-    let resume = await Resume.findById(req.params.id);
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not authenticated'
+      });
+    }
+
+    const resume = await Resume.findById(req.params.id);
 
     if (!resume) {
       return res.status(404).json({
@@ -86,28 +138,36 @@ router.put('/:id', protect, async (req, res) => {
       });
     }
 
-    // Make sure user owns resume
+    // Check ownership
     if (resume.user.toString() !== req.user.id) {
       return res.status(401).json({
         success: false,
-        message: 'Not authorized'
+        message: 'Not authorized to update this resume'
       });
     }
 
-    resume = await Resume.findByIdAndUpdate(
+    const updatedResume = await Resume.findByIdAndUpdate(
       req.params.id,
-      req.body,
-      { new: true, runValidators: true }
+      { 
+        ...req.body,
+        user: req.user.id // Ensure user ID doesn't change
+      },
+      {
+        new: true,
+        runValidators: true
+      }
     );
 
     res.json({
       success: true,
-      data: resume
+      data: updatedResume
     });
   } catch (err) {
+    console.error('Error updating resume:', err);
     res.status(500).json({
       success: false,
-      message: 'Server Error'
+      message: 'Error updating resume',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }
 });
@@ -115,6 +175,13 @@ router.put('/:id', protect, async (req, res) => {
 // Delete resume
 router.delete('/:id', protect, async (req, res) => {
   try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not authenticated'
+      });
+    }
+
     const resume = await Resume.findById(req.params.id);
 
     if (!resume) {
@@ -143,7 +210,7 @@ router.delete('/:id', protect, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error deleting resume',
-      error: err.message
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }
 });
@@ -168,9 +235,11 @@ router.get('/share/:link', async (req, res) => {
       data: resume
     });
   } catch (err) {
+    console.error('Error fetching resume:', err);
     res.status(500).json({
       success: false,
-      message: 'Server Error'
+      message: 'Error fetching resume',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }
 });

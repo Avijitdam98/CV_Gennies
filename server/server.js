@@ -19,6 +19,9 @@ const {
   validateApiKey,
   sessionManager
 } = require('./utils/security');
+const Joi = require('joi');
+const winston = require('winston');
+const timeout = require('connect-timeout');
 
 // Route imports
 const userRoutes = require('./routes/auth');
@@ -156,8 +159,35 @@ const startServer = () => {
   }
 };
 
-// Initialize database connection
-connectWithRetry();
+// Configure winston logger
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'combined.log' })
+  ]
+});
+
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(new winston.transports.Console({
+    format: winston.format.simple()
+  }));
+}
+
+// Global error logger
+app.use((err, req, res, next) => {
+  logger.error({
+    message: err.message,
+    stack: err.stack,
+    path: req.path,
+    method: req.method
+  });
+  next(err);
+});
 
 // Middleware
 app.use(express.json());
@@ -183,6 +213,15 @@ app.use('/api/payments', paymentRoutes);
 // Error handling middleware
 app.use(errorHandler);
 
+// Request timeout middleware
+app.use(timeout('15s'));
+app.use((req, res, next) => {
+  if (!req.timedout) next();
+});
+
+// Initialize database connection
+connectWithRetry();
+
 // Start the server
 startServer();
 
@@ -206,26 +245,16 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-// Graceful shutdown with cleanup
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM RECEIVED. Shutting down gracefully');
-  try {
-    // Close all connections
-    await Promise.all([
-      mongoose.connection.close(),
-      cacheManager.redisClient?.quit()
-    ]);
-    console.log('Database connections closed.');
-    
-    // Close server
-    server.close(() => {
-      console.log('Process terminated!');
+// Graceful shutdown handling
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM signal received');
+  server.close(() => {
+    logger.info('HTTP server closed');
+    mongoose.connection.close(false, () => {
+      logger.info('MongoDB connection closed');
       process.exit(0);
     });
-  } catch (err) {
-    console.error('Error during shutdown:', err);
-    process.exit(1);
-  }
+  });
 });
 
 module.exports = app;

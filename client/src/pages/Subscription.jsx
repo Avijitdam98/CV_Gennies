@@ -1,13 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import axios from 'axios';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Check, Loader2 } from 'lucide-react';
 
 const Subscription = () => {
   const [loading, setLoading] = useState(false);
-  const { user } = useSelector((state) => state.auth);
-  const [subscriptionStatus, setSubscriptionStatus] = useState(null);
-
-  const RAZORPAY_PAYMENT_LINK = 'https://rzp.io/rzp/KyTwxBLi';
 
   const plans = [
     {
@@ -15,153 +11,161 @@ const Subscription = () => {
       name: 'Free Plan',
       price: 0,
       features: [
-        'Access to basic templates',
-        'Create up to 3 resumes',
-        'Download as PDF',
-        'Basic customization options',
+        'Create 1 resume',
+        'Basic templates',
+        'PDF export',
+        'Essential customization',
+        'Email support'
       ],
-      buttonText: 'Current Plan',
-      disabled: true,
+      limitations: [
+        'No premium templates',
+        'Limited customization',
+        'No analytics',
+        'No priority support'
+      ]
     },
     {
       id: 'pro',
       name: 'Pro Plan',
-      price: 320,
+      price: 499,
+      currency: 'INR',
+      interval: 'month',
       features: [
-        'Access to all premium templates',
         'Unlimited resumes',
-        'Priority support',
-        'Advanced customization options',
-        'Shareable resume links',
-        'Remove watermark',
+        'All premium templates',
         'Multiple export formats',
-      ],
-      buttonText: 'Upgrade Now',
-      disabled: false,
-    },
+        'Advanced customization',
+        'Resume analytics',
+        'Priority support',
+        'Remove watermark',
+        'Custom domain sharing'
+      ]
+    }
   ];
 
-  useEffect(() => {
-    const fetchSubscriptionStatus = async () => {
-      try {
-        const response = await axios.get('/api/payments/subscription-status', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        setSubscriptionStatus(response.data.subscription);
-      } catch (error) {
-        console.error('Error fetching subscription status:', error);
-      }
-    };
-
-    if (user) {
-      fetchSubscriptionStatus();
-    }
-  }, [user]);
-
-  const handlePayment = async (planId) => {
-    if (planId === 'pro') {
-      window.location.href = RAZORPAY_PAYMENT_LINK;
+  const handleUpgrade = async () => {
+    try {
+      setLoading(true);
+      window.location.href = 'https://rzp.io/rzp/KyTwxBLi';
+    } catch (error) {
+      console.error('Error redirecting to payment:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center">
-        <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-          Choose Your Plan
-        </h2>
-        <p className="mt-4 text-xl text-gray-600">
-          Select the perfect plan for your resume building needs
-        </p>
-      </div>
-
-      <div className="mt-12 grid gap-8 lg:grid-cols-2">
-        {plans.map((plan) => (
-          <div
-            key={plan.id}
-            className={`bg-white rounded-lg shadow-lg divide-y divide-gray-200 ${
-              plan.id === 'pro' ? 'border-2 border-primary-500' : ''
-            }`}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl font-bold text-gray-900 sm:text-5xl"
           >
-            <div className="p-6">
-              <h3 className="text-2xl font-bold text-gray-900">
-                {plan.name}
-                {plan.id === 'pro' && (
-                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
-                    Recommended
+            Choose Your Plan
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mt-5 text-xl text-gray-500"
+          >
+            Select the perfect plan for your resume building needs
+          </motion.p>
+        </div>
+
+        {/* Pricing Cards */}
+        <div className="mt-16 grid gap-8 lg:grid-cols-2 lg:gap-12 max-w-4xl mx-auto">
+          {plans.map((plan, index) => (
+            <motion.div
+              key={plan.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className={`rounded-2xl bg-white p-8 shadow-lg ring-1 ring-gray-200 ${
+                plan.id === 'pro' ? 'relative' : ''
+              }`}
+            >
+              {plan.id === 'pro' && (
+                <div className="absolute -top-4 left-0 right-0 mx-auto w-32">
+                  <div className="rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-3 py-1 text-sm text-white text-center font-medium">
+                    RECOMMENDED
+                  </div>
+                </div>
+              )}
+
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">{plan.name}</h3>
+                <p className="mt-4">
+                  <span className="text-4xl font-bold tracking-tight text-gray-900">
+                    {plan.price === 0 ? 'Free' : `₹${plan.price}`}
                   </span>
-                )}
-              </h3>
-              <p className="mt-4 text-gray-500">
-                {plan.price === 0 ? (
-                  'Free'
-                ) : (
-                  <span>
-                    ₹{plan.price}
-                    <span className="text-base font-medium">/month</span>
-                  </span>
-                )}
-              </p>
-              <ul className="mt-6 space-y-4">
-                {plan.features.map((feature, index) => (
-                  <li key={index} className="flex items-start">
-                    <svg
-                      className="flex-shrink-0 h-6 w-6 text-green-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="ml-3 text-gray-500">{feature}</span>
+                  {plan.interval && (
+                    <span className="text-sm font-semibold text-gray-500">/{plan.interval}</span>
+                  )}
+                </p>
+              </div>
+
+              <ul className="space-y-3">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-center gap-3 text-gray-700">
+                    <Check className="h-5 w-5 flex-shrink-0 text-blue-500" />
+                    {feature}
+                  </li>
+                ))}
+                {plan.limitations?.map((limitation) => (
+                  <li key={limitation} className="flex items-center gap-3 text-gray-400">
+                    <Check className="h-5 w-5 flex-shrink-0 text-gray-300" />
+                    {limitation}
                   </li>
                 ))}
               </ul>
+
               {plan.id === 'pro' ? (
-                <a
-                  href={RAZORPAY_PAYMENT_LINK}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`mt-8 w-full py-3 px-4 rounded-md shadow bg-primary-600 hover:bg-primary-700 text-white text-center font-medium inline-block transition-colors duration-200`}
+                <button
+                  onClick={handleUpgrade}
+                  disabled={loading}
+                  className={`mt-8 w-full rounded-xl py-3 px-6 text-center text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 
+                    ${
+                      loading
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-blue-600 hover:bg-blue-500 focus-visible:outline-blue-600'
+                    }`}
                 >
-                  {plan.buttonText}
-                </a>
+                  {loading ? (
+                    <span className="flex items-center justify-center">
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Redirecting...
+                    </span>
+                  ) : (
+                    'Upgrade Now'
+                  )}
+                </button>
               ) : (
                 <button
-                  disabled={true}
-                  className="mt-8 w-full py-3 px-4 rounded-md shadow bg-gray-300 cursor-not-allowed text-white text-center font-medium"
+                  disabled
+                  className="mt-8 w-full rounded-xl bg-gray-100 py-3 px-6 text-center text-sm font-semibold text-gray-600 cursor-not-allowed"
                 >
-                  {plan.buttonText}
+                  Free Plan
                 </button>
               )}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {subscriptionStatus && (
-        <div className="mt-8 bg-blue-50 p-4 rounded-md">
-          <h4 className="text-lg font-medium text-blue-800">
-            Current Subscription Status
-          </h4>
-          <p className="mt-2 text-blue-700">
-            Plan: {subscriptionStatus.type.charAt(0).toUpperCase() + subscriptionStatus.type.slice(1)}
-            {subscriptionStatus.validUntil && (
-              <span className="ml-2">
-                (Valid until:{' '}
-                {new Date(subscriptionStatus.validUntil).toLocaleDateString()})
-              </span>
-            )}
-          </p>
+            </motion.div>
+          ))}
         </div>
-      )}
+
+        {/* Additional Info */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mt-12 text-center text-gray-500"
+        >
+          <p>✨ Upgrade now and unlock all premium features!</p>
+          <p className="mt-2">🔒 Secure payment • Cancel anytime • Instant access</p>
+        </motion.div>
+      </div>
     </div>
   );
 };

@@ -29,7 +29,7 @@ const subscriptionSchema = new mongoose.Schema({
   features: {
     maxResumes: {
       type: Number,
-      default: 3 // Free plan limit
+      default: 1 // Free plan limit - updated to 1
     },
     premiumTemplates: {
       type: Boolean,
@@ -38,10 +38,37 @@ const subscriptionSchema = new mongoose.Schema({
     removeWatermark: {
       type: Boolean,
       default: false
+    },
+    analytics: {
+      type: Boolean,
+      default: false
+    },
+    prioritySupport: {
+      type: Boolean,
+      default: false
+    },
+    customDomain: {
+      type: Boolean,
+      default: false
     }
   }
 }, {
   timestamps: true
 });
 
-module.exports = mongoose.model('Subscription', subscriptionSchema);
+// Add index for faster lookups
+subscriptionSchema.index({ userId: 1 });
+
+// Method to check if subscription is active
+subscriptionSchema.methods.isActive = function() {
+  return this.status === 'active' && (!this.endDate || new Date(this.endDate) > new Date());
+};
+
+// Method to check if user can create more resumes
+subscriptionSchema.methods.canCreateResume = function() {
+  return this.type === 'pro' || this.features.maxResumes > 0;
+};
+
+const Subscription = mongoose.model('Subscription', subscriptionSchema);
+
+module.exports = Subscription;

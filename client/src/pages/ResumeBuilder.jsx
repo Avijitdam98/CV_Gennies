@@ -115,7 +115,16 @@ const ResumeBuilder = () => {
         body: JSON.stringify(data)
       });
 
-      if (!response.ok) throw new Error('Failed to save resume');
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 403 && responseData.code === 'UPGRADE_REQUIRED') {
+          toast.error('Free plan limit reached. Please upgrade to create more resumes.');
+          navigate('/subscription');
+          return;
+        }
+        throw new Error(responseData.message || 'Failed to save resume');
+      }
 
       setSaveStatus('saved');
       setLastSaveTime(Date.now());
@@ -130,14 +139,13 @@ const ResumeBuilder = () => {
         },
       });
 
-      if (!id) {
-        const result = await response.json();
-        navigate(`/edit-resume/${result.data._id}`, { replace: true });
+      if (!id && responseData.data?._id) {
+        navigate(`/edit-resume/${responseData.data._id}`, { replace: true });
       }
     } catch (error) {
       console.error('Error saving resume:', error);
       setSaveStatus('error');
-      toast.error('Failed to save changes');
+      toast.error(error.message || 'Failed to save changes');
     } finally {
       setIsSaving(false);
     }

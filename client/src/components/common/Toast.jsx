@@ -1,34 +1,49 @@
-import React, { useEffect } from 'react';
-import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
 
-const icons = {
-  success: <CheckCircle className="h-5 w-5 text-green-400" />,
-  error: <AlertCircle className="h-5 w-5 text-red-400" />,
-  info: <Info className="h-5 w-5 text-blue-400" />,
-  warning: <AlertTriangle className="h-5 w-5 text-yellow-400" />
-};
+const Toast = ({ message, type = 'info', onClose, isVisible, duration = 3000 }) => {
+  const toastTypes = {
+    success: 'bg-green-500',
+    error: 'bg-red-500',
+    info: 'bg-blue-500',
+    warning: 'bg-yellow-500'
+  };
 
-const Toast = ({ message, type = 'info', onClose, duration = 3000 }) => {
-  useEffect(() => {
-    if (duration) {
+  const icons = {
+    success: '✓',
+    error: '✕',
+    info: 'ℹ',
+    warning: '⚠'
+  };
+
+  React.useEffect(() => {
+    if (duration && isVisible) {
       const timer = setTimeout(onClose, duration);
       return () => clearTimeout(timer);
     }
-  }, [duration, onClose]);
+  }, [duration, onClose, isVisible]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-[var(--z-toast)] animate-slide-up">
-      <div className="bg-white rounded-lg shadow-lg p-4 flex items-center space-x-3 min-w-[300px]">
-        {icons[type]}
-        <p className="text-sm text-gray-600 flex-1">{message}</p>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-500 focus:outline-none"
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          className={`fixed bottom-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg ${toastTypes[type]} text-white min-w-[300px]`}
         >
-          <X className="h-5 w-5" />
-        </button>
-      </div>
-    </div>
+          <span className="text-xl">{icons[type]}</span>
+          <p className="flex-1">{message}</p>
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-white/20 rounded-full transition-colors"
+          >
+            <X size={18} />
+          </button>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

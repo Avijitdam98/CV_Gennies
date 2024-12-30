@@ -77,33 +77,32 @@ router.get('/:id', protect, async (req, res) => {
 // Create a new resume
 router.post('/', protect, async (req, res) => {
   try {
-    console.log('Creating new resume for user:', req.user.id);
-    const newResume = new Resume({
-      user: req.user.id,
-      template: req.body.template || 'modern',
-      personalInfo: req.body.personalInfo || {},
-      education: req.body.education || [],
-      experience: req.body.experience || [],
-      skills: req.body.skills || [],
-      projects: req.body.projects || [],
-      certifications: req.body.certifications || [],
-      languages: req.body.languages || [],
-      awards: req.body.awards || []
+    // Check user's subscription and resume count for free tier
+    if (req.user.subscription.type === 'free') {
+      const resumeCount = await Resume.countDocuments({ user: req.user.id });
+      if (resumeCount >= 1) {
+        return res.status(403).json({
+          success: false,
+          message: 'Free tier users can only create one resume. Please upgrade to create more.',
+          code: 'UPGRADE_REQUIRED'
+        });
+      }
+    }
+
+    const resume = await Resume.create({
+      ...req.body,
+      user: req.user.id
     });
 
-    const resume = await newResume.save();
-    console.log('Resume created:', resume._id);
-    
     res.status(201).json({
       success: true,
       data: resume
     });
   } catch (err) {
     console.error('Error creating resume:', err);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error creating resume', 
-      error: err.message 
+      message: 'Error creating resume'
     });
   }
 });
