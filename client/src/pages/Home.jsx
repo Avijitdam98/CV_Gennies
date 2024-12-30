@@ -130,6 +130,51 @@ const Home = () => {
               </Link>
             </div>
           </motion.div>
+
+          {/* Template Showcase */}
+          <motion.div
+            className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="relative group">
+              <img
+                src="https://d.novoresume.com/images/doc/functional-resume-template.png"
+                alt="Modern Resume Template"
+                className="w-full rounded-lg shadow-lg transform group-hover:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://dummyimage.com/600x800/1e40af/ffffff.jpg&text=Modern+Template";
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
+            </div>
+            <div className="relative group">
+              <img
+                src="https://d.novoresume.com/images/doc/professional-resume-template.png"
+                alt="Professional Resume Template"
+                className="w-full rounded-lg shadow-lg transform group-hover:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://dummyimage.com/600x800/1e40af/ffffff.jpg&text=Professional+Template";
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
+            </div>
+            <div className="relative group">
+              <img
+                src="https://d.novoresume.com/images/doc/simple-resume-template.png"
+                alt="Creative Resume Template"
+                className="w-full rounded-lg shadow-lg transform group-hover:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://dummyimage.com/600x800/1e40af/ffffff.jpg&text=Creative+Template";
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
+            </div>
+          </motion.div>
         </div>
       </div>
 
