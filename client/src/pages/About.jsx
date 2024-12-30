@@ -4,20 +4,11 @@ import { motion } from 'framer-motion';
 const About = () => {
   const teamMembers = [
     {
-      name: 'John Doe',
+      name: 'Avijit Subhra Dam',
       role: 'CEO & Founder',
-      bio: 'Former HR executive with 15 years of experience in talent acquisition.'
+      bio: 'Full-Stack Developer with a passion for creating intuitive and user-friendly web applications.',
+      image: 'https://avatars.githubusercontent.com/u/84221186?s=400&u=a96d86bd5930864c3f1994be6a7909aa51bd447e&v=4',
     },
-    {
-      name: 'Jane Smith',
-      role: 'Head of Design',
-      bio: 'Award-winning designer specializing in user experience and interface design.'
-    },
-    {
-      name: 'Mike Johnson',
-      role: 'Lead Developer',
-      bio: 'Full-stack developer with expertise in AI and machine learning.'
-    }
   ];
 
   return (
@@ -69,7 +60,11 @@ const About = () => {
                 transition={{ delay: 0.3 + index * 0.1 }}
                 className="bg-white p-6 rounded-lg shadow-md text-center"
               >
-                <div className="w-32 h-32 mx-auto mb-4 bg-gray-200 rounded-full"></div>
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+                />
                 <h3 className="text-xl font-semibold mb-2">{member.name}</h3>
                 <p className="text-blue-600 mb-3">{member.role}</p>
                 <p className="text-gray-600">{member.bio}</p>

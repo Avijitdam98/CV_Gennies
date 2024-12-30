@@ -25,6 +25,7 @@ import Terms from './pages/Terms.jsx';
 import Help from './pages/Help.jsx';
 import CareerAdvice from './pages/CareerAdvice.jsx';
 import Tips from './pages/Tips.jsx';
+import Examples from './pages/Examples.jsx';
 
 function App() {
   return (
@@ -49,6 +50,9 @@ function App() {
               <Route path="/help" element={<Help />} />
               <Route path="/career-advice" element={<CareerAdvice />} />
               <Route path="/tips" element={<Tips />} />
+              <Route path="/examples" element={<Examples />} />
+              <Route path="/resume-builder" element={<ResumeBuilder />} />
+              <Route path="/resume-builder/:id" element={<ResumeBuilder />} />
               <Route
                 path="/dashboard"
                 element={
