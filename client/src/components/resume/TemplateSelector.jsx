@@ -16,7 +16,7 @@ const templates = [
     id: 'minimal',
     name: 'Minimal',
     //component: MinimalTemplate,
-    thumbnail: 'https://images.unsplash.com/photo-1626197031507-c17099753214?q=80&w=2070&auto=format&fit=crop',
+    thumbnail: 'https://resumekraft.com/wp-content/uploads/edd/2019/04/Minimal-Resume-Template-Free-Download-1000x750.jpg',
     description: 'Simple and elegant layout that lets your content shine',
     features: ['Minimalist Design', 'Focus on Content', 'Easy to Read', 'Perfect for Tech']
   },
