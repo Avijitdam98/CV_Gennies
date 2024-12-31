@@ -14,34 +14,33 @@ const Dashboard = () => {
   }, [user, navigate]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-16">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         {/* Welcome Section */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">
-            Welcome back, <span className="text-blue-600">{user?.name}</span>!
+        <div className="text-center mb-16">
+          <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mb-4">
+            Welcome back, {user?.name}!
           </h1>
-          <p className="text-base text-gray-600">
+          <p className="text-xl text-gray-600 font-light">
             Create, manage, and perfect your professional resume
           </p>
         </div>
 
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
           {/* Create New Resume Card */}
-          <div className="group relative bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-            <div className="p-6">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                <Plus className="w-5 h-5 text-blue-600" />
+          <div className="group bg-white/70 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-white/20">
+            <div className="p-8 lg:p-10">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                <Plus className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Create New Resume</h2>
-              <p className="text-sm text-gray-600 mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Create New Resume</h2>
+              <p className="text-gray-600 mb-8 leading-relaxed">
                 Start fresh with our intuitive resume builder. Create a professional resume in minutes.
               </p>
               <button
                 onClick={() => navigate('/create-resume')}
-                className="w-full py-2 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-all duration-300"
+                className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all duration-500 transform hover:translate-y-[-2px] hover:shadow-lg active:translate-y-[1px]"
               >
                 Get Started
               </button>
@@ -49,19 +48,18 @@ const Dashboard = () => {
           </div>
 
           {/* My Resumes Card */}
-          <div className="group relative bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-            <div className="p-6">
-              <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                <FileText className="w-5 h-5 text-indigo-600" />
+          <div className="group bg-white/70 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-white/20">
+            <div className="p-8 lg:p-10">
+              <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                <FileText className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">My Resumes</h2>
-              <p className="text-sm text-gray-600 mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">My Resumes</h2>
+              <p className="text-gray-600 mb-8 leading-relaxed">
                 Access and edit your existing resumes. Keep them updated and ready to share.
               </p>
               <button
                 onClick={() => navigate('/my-resumes')}
-                className="w-full py-2 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-medium hover:from-indigo-700 hover:to-purple-700 transition-all duration-300"
+                className="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all duration-500 transform hover:translate-y-[-2px] hover:shadow-lg active:translate-y-[1px]"
               >
                 View All
               </button>
@@ -69,21 +67,20 @@ const Dashboard = () => {
           </div>
 
           {/* Subscription Card */}
-          <div className="group relative bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-            <div className="p-6">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                <Crown className="w-5 h-5 text-purple-600" />
+          <div className="group bg-white/70 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-white/20">
+            <div className="p-8 lg:p-10">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                <Crown className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Subscription</h2>
-              <p className="text-sm text-gray-600 mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Subscription</h2>
+              <p className="text-gray-600 mb-8 leading-relaxed">
                 Current Plan: <span className="font-semibold text-purple-600">free</span>
                 <br />
                 Upgrade for premium features and templates.
               </p>
               <button
                 onClick={() => navigate('/subscription')}
-                className="w-full py-2 px-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transition-all duration-300"
+                className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-medium hover:from-purple-700 hover:to-pink-700 transition-all duration-500 transform hover:translate-y-[-2px] hover:shadow-lg active:translate-y-[1px]"
               >
                 Manage Plan
               </button>
